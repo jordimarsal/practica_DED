@@ -1,9 +1,7 @@
 package uoc.ei.practica;
 
-import java.util.Date;
-
-import uoc.ei.tads.DiccionariAVLImpl;
 import uoc.ei.tads.Iterador;
+import uoc.ei.tads.LlistaEncadenada;
 
 /**
  * Classe que modela una entitat Repositori
@@ -13,12 +11,12 @@ public class Repository {
 	/**
 	 * AVL de fitxers
 	 */
-	private DiccionariAVLImpl<String, File> files;
+	// private DiccionariAVLImpl<String, File> files;
 
 	/**
 	 * llista encadenada de branques
 	 */
-	private IdentifiedList<Branch> branches;
+	private LlistaEncadenada<Branch> branches;
 
 	/**
 	 * path del repositori
@@ -46,13 +44,14 @@ public class Repository {
 	private int activity;
 
 	public Repository(String idRepository, String path, String description) {
-		this.files = new DiccionariAVLImpl<String, File>();
+		// this.files = new DiccionariAVLImpl<String, File>();
 		this.groups = new IdentifiedList<Group>();
-		this.branches = new IdentifiedList<Branch>();
+		this.branches = new LlistaEncadenada<Branch>();
 		this.path = path;
 		this.description = description;
 		this.idRepository = idRepository;
-		addBranch(new Branch("Trunk", "T", "TR"));
+		this.addBranch("Trunk", "Trunk", "TR");
+		System.out.println("from creator ");
 	}
 
 	/**
@@ -116,6 +115,7 @@ public class Repository {
 	 */
 	public void addBranch(Branch branch) {
 		this.branches.afegirAlFinal(branch);
+		System.out.println("added " + branch.getIdBranch());
 	}
 
 	/**
@@ -151,13 +151,14 @@ public class Repository {
 	 * @param idRevision
 	 *            identificador de la nova revisió
 	 */
+	/*
 	public void addRevision(User user, Date dateTime, String filePath, String newSourceCode, int idRevision) {
-		File f = this.files.consultar(filePath);
-		if (f == null) {
-			f = addFile(filePath);
-		}
-		f.addRevision(user, dateTime, newSourceCode, idRevision);
+	File f = this.files.consultar(filePath);
+	if (f == null) {
+		f = addFile(filePath);
 	}
+	f.addRevision(user, dateTime, newSourceCode, idRevision);
+	}*/
 
 	/**
 	 * mètode que afegex un nou fitxer sobre el repositori
@@ -166,11 +167,11 @@ public class Repository {
 	 *            path del nou fitxer a afegir
 	 * @return retorna un nou Fitxer en el sistema
 	 */
-	private File addFile(String filePath) {
+	/*private File addFile(String filePath) {
 		File f = new File(filePath);
 		this.files.afegir(filePath, f);
 		return f;
-	}
+	}*/
 
 	/*
 		/**
@@ -186,9 +187,10 @@ public class Repository {
 	 * 
 	 * @return retorna el iterador de fitxers
 	 */
+	/*
 	public Iterador<File> ItFiles() {
-		return this.files.elements();
-	}
+	return this.files.elements();
+	}*/
 
 	/**
 	 * mètode que retorna un iterador de branques
@@ -224,13 +226,14 @@ public class Repository {
 	 * @throws EIException
 	 *             llença una excepció en el cas que el fitxer no existeixi
 	 */
+	/*
 	public File getFile(String filePath) throws EIException {
-		File f = this.files.consultar(filePath);
-		if (f == null) {
-			throw new EIException(Messages.FILE_NOT_FOUND);
-		}
-		return f;
+	File f = this.files.consultar(filePath);
+	if (f == null) {
+		throw new EIException(Messages.FILE_NOT_FOUND);
 	}
+	return f;
+	}*/
 
 	/**
 	 * mètode que retorna una revisió d'un fitxer sobre una determinada revisió
@@ -241,14 +244,15 @@ public class Repository {
 	 *            identificador de la revisió
 	 * @return retorna la revisió a cercar o null en el cas que no existeixi
 	 */
+	/*
 	public Revision getRevision(String filePath, int idRevision) {
-		Revision r = null;
-		File f = this.files.consultar(filePath);
-		if (f != null) {
-			r = f.getRevision(idRevision);
-		}
-		return r;
+	Revision r = null;
+	File f = this.files.consultar(filePath);
+	if (f != null) {
+		r = f.getRevision(idRevision);
 	}
+	return r;
+	}*/
 
 	/**
 	 * mètode que retorna una branca d'un repositori
@@ -258,7 +262,20 @@ public class Repository {
 	 * @return retorna la branca a cercar o null en el cas que no existeixi
 	 */
 	public Branch getBranch(String idBranch) {
-		Branch b = branches.getIdentifiedObject(idBranch);
+		Branch b = null;
+		Iterador<Branch> it = branches.elements();
+		while (it.hiHaSeguent()) {
+			Branch bF = it.seguent();
+			if (bF.getIdBranch().equals(idBranch)) {
+				b = bF;
+			}
+		}
 		return b;
 	}
+
+	public void addBranch(String idSourceBranch, String idTargetBranch, String idUser) {
+		Branch bra = new Branch(idSourceBranch, idTargetBranch, idUser);
+		this.branches.afegirAlFinal(bra);
+	}
+
 }

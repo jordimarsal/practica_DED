@@ -3,15 +3,16 @@ package uoc.ei.practica;
 import java.util.Date;
 
 import uoc.ei.tads.DiccionariAVLImpl;
-import uoc.ei.tads.ExcepcioPosicioInvalida;
 import uoc.ei.tads.Iterador;
+import uoc.ei.tads.LlistaEncadenada;
+import uoc.ei.tads.TaulaDispersio;
 
 public class SVNManagerImpl implements SVNManager {
 
 	/**
 	 * AVL de repositoris
 	 */
-	private DiccionariAVLImpl<String, Repository> repositories;
+	private TaulaDispersio<String, Repository> repositories;
 	private int len;
 
 	/**
@@ -36,7 +37,7 @@ public class SVNManagerImpl implements SVNManager {
 	public static Group mostActiveGroup;
 
 	public SVNManagerImpl() {
-		this.repositories = new DiccionariAVLImpl<String, Repository>();
+		this.repositories = new TaulaDispersio<String, Repository>();
 		this.len = 0;
 
 		// this.users = new OrderedVector<String, User>(U, User.COMP);
@@ -149,14 +150,19 @@ public class SVNManagerImpl implements SVNManager {
 			throw new EIException(Messages.USER_NOT_FOUND);
 		}
 		if (repo.hasPermission(user)) {
-			Revision r = repo.getRevision(filePath, idRevision);
-			if (r != null) {
-				throw new EIException(Messages.REVISION_ALREADY_EXISTS);
+			Branch bran = repo.getBranch(idBranch);
+			if (bran != null) {
+				Revision r = bran.getRevision(filePath, idRevision);
+				if (r != null) {
+					throw new EIException(Messages.REVISION_ALREADY_EXISTS);
+				}
+				bran.addRevision(user, dateTime, filePath, newSourceCode, idRevision);
+				repo.incActivity();
+				user.incActivity();
+				updateMostActiveRepository(repo);
+			} else {
+				throw new EIException(Messages.BRANCH_NOT_FOUND);
 			}
-			repo.addRevision(user, dateTime, filePath, newSourceCode, idRevision);
-			repo.incActivity();
-			user.incActivity();
-			updateMostActiveRepository(repo);
 		} else {
 			throw new EIException(Messages.NO_PRIVILEGES);
 		}
@@ -169,6 +175,11 @@ public class SVNManagerImpl implements SVNManager {
 		if (repo == null) {
 			throw new EIException(Messages.REPOSITORY_NOT_FOUND);
 		}
+		Branch bran = repo.getBranch(idBranch);
+		if (bran == null) {
+			throw new EIException(Messages.BRANCH_NOT_FOUND);
+		}
+
 		/*Contenidor<File> contenidor = repo.files();
 
 		if (contenidor.estaBuit()) {
@@ -177,34 +188,35 @@ public class SVNManagerImpl implements SVNManager {
 
 		//final Iterador<File> it = contenidor.elements();
 		*/
-		final Iterador<File> it = repo.ItFiles();
+		final Iterador<File> it = bran.ItFiles();
 		if (it == null) {
 			throw new EIException(Messages.NO_FILES);
 		}
 		File f = null;
 		Revision r = null;
 
-		return new Iterador<Revision>() {
+		LlistaEncadenada<Revision> reviCheck = new LlistaEncadenada<Revision>();
+		Revision raux = null;
+		while (it.hiHaSeguent()) {
+			File fi = it.seguent();
 
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public boolean hiHaSeguent() {
-				return it.hiHaSeguent();
+			Iterador<Revision> itreve = fi.ItRevisions();
+			while (itreve.hiHaSeguent()) {
+				Revision revi = itreve.seguent();
+				if (revi.getIdRevision() <= idRevision) {
+					raux = revi;
+				}
 			}
-
-			@Override
-			public Revision seguent() throws ExcepcioPosicioInvalida {
-				File f = it.seguent();
-				Revision r = f.getRevisionLessThanEqual(idRevision);
-
-				return r;
+			if (raux != null) {
+				reviCheck.afegirAlFinal(raux);// fi.consultaRevisio(idRevision)
+				System.out.println("branch:" + bran.getIdBranch() + " rev consultada:" + idRevision + " hallada:"
+						+ raux.getIdRevision() + " bla:" + raux.toString());
+				// break;
 			}
+		}
+		System.out.println("ret");
+		return reviCheck.elements();
 
-		};
 	}
 
 	// @Override
@@ -242,7 +254,15 @@ public class SVNManagerImpl implements SVNManager {
 	@Override
 	public Revision getFile(String idRepository, String idBranch, int idRevision, String filePath) throws EIException {
 		Repository repo = this.getRepository(idRepository);
-		File f = repo.getFile(filePath);
+		if (repo == null) {
+			throw new EIException(Messages.REPOSITORY_NOT_FOUND);
+		}
+		Branch bran = repo.getBranch(idBranch);
+		if (bran == null) {
+			throw new EIException(Messages.BRANCH_NOT_FOUND);
+		}
+
+		File f = bran.getFile(filePath);
 		if (f == null) {
 			throw new EIException(Messages.FILE_NOT_FOUND);
 		}
@@ -289,7 +309,11 @@ public class SVNManagerImpl implements SVNManager {
 		if (repo.getBranch(idSourceBranch) == null) {
 			throw new EIException(Messages.BRANCH_NOT_FOUND);
 		}
-		repo.addBranch(new Branch(idSourceBranch, idTargetBranch, idUser));
+		if (repo.hasPermission(user)) {
+			repo.addBranch(new Branch(idSourceBranch, idTargetBranch, idUser));
+		} else {
+			throw new EIException(Messages.NO_PRIVILEGES);
+		}
 
 	}
 
