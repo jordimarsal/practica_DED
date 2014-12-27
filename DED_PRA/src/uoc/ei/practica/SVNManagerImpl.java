@@ -44,8 +44,8 @@ public class SVNManagerImpl implements SVNManager {
 		this.users = new DiccionariAVLImpl<String, User>();
 		// this.groups = new IdentifiedList<Group>();
 		this.groups = new DiccionariAVLImpl<String, Group>();
-		this.mostActiveRepository = null;
-		this.mostActiveGroup = null;
+		SVNManagerImpl.mostActiveRepository = null;
+		SVNManagerImpl.mostActiveGroup = null;
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class SVNManagerImpl implements SVNManager {
 		if (mostActiveGroup == null) {
 			throw new EIException(Messages.NO_GROUPS);
 		}
-		return this.mostActiveGroup;
+		return SVNManagerImpl.mostActiveGroup;
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class SVNManagerImpl implements SVNManager {
 	}
 
 	@Override
-	public Iterador<Revision> checkout(String idRepository, String idBranch, final int idRevision) throws EIException {
+	public Iterador<Revision> checkout(String idRepository, String idBranch, int idRevision) throws EIException {
 		Repository repo = this.getRepository(idRepository);
 		if (repo == null) {
 			throw new EIException(Messages.REPOSITORY_NOT_FOUND);
@@ -180,76 +180,37 @@ public class SVNManagerImpl implements SVNManager {
 			throw new EIException(Messages.BRANCH_NOT_FOUND);
 		}
 
-		/*Contenidor<File> contenidor = repo.files();
-
-		if (contenidor.estaBuit()) {
-			throw new EIException(Messages.NO_FILES);
-		}
-
-		//final Iterador<File> it = contenidor.elements();
-		*/
-		final Iterador<File> it = bran.ItFiles();
+		Iterador<File> it = bran.ItFiles();
 		if (it == null) {
 			throw new EIException(Messages.NO_FILES);
 		}
-		File f = null;
-		Revision r = null;
 
 		LlistaEncadenada<Revision> reviCheck = new LlistaEncadenada<Revision>();
 		Revision raux = null;
+		Revision revi = null;
 		while (it.hiHaSeguent()) {
 			File fi = it.seguent();
 
 			Iterador<Revision> itreve = fi.ItRevisions();
 			while (itreve.hiHaSeguent()) {
-				Revision revi = itreve.seguent();
+				revi = itreve.seguent();
 				if (revi.getIdRevision() <= idRevision) {
 					raux = revi;
 				}
 			}
 			if (raux != null) {
-				reviCheck.afegirAlFinal(raux);// fi.consultaRevisio(idRevision)
-				System.out.println("branch:" + bran.getIdBranch() + " rev consultada:" + idRevision + " hallada:"
+				reviCheck.afegirAlFinal(raux);
+				System.out.println("chk: file:" + fi.getIdentifier());
+				System.out.println("chk: branch:" + bran.getIdBranch() + " rev consultada:" + idRevision + " hallada:"
 						+ raux.getIdRevision() + " bla:" + raux.toString());
-				// break;
+				raux = null;
+				revi = null;
 			}
 		}
 		System.out.println("ret");
 		return reviCheck.elements();
 
 	}
-
-	// @Override
-	/*
-	public Iterador<Revision> checkout(int idRepository, final int idRevision) throws EIException {
-		Repository repo = this.getRepository(idRepository);
-		Contenidor<File> contenidor = repo.files();
-
-		if (contenidor.estaBuit()) {
-			throw new EIException(Messages.NO_FILES);
-		}
-
-		final Iterador<File> it = contenidor.elements();
-		File f = null;
-		Revision r = null;
-
-		return new Iterador<Revision>() {
-
-			@Override
-			public boolean hiHaSeguent() {
-				return it.hiHaSeguent();
-			}
-
-			@Override
-			public Revision seguent() throws ExcepcioPosicioInvalida {
-				File f = it.seguent();
-				Revision r = f.getRevisionLessThanEqual(idRevision);
-
-				return r;
-			}
-
-		};
-	}*/
 
 	@Override
 	public Revision getFile(String idRepository, String idBranch, int idRevision, String filePath) throws EIException {

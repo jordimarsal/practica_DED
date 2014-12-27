@@ -117,39 +117,48 @@ public class Repository {
 	public void addBranch(Branch branch) {
 		initialiceBranch(branch);
 		this.branches.afegirAlFinal(branch);
-		
+
 		System.out.println("added " + branch.getIdBranch());
 	}
 
 	/**
-	 * mètode que inicialitza una nova branca
+	 * mètode que inicialitza una nova branca,
+	 * copia només la última revisió de cada arxiu de la branca font
 	 * 
 	 * @param branch
 	 */
 	private void initialiceBranch(Branch branch) {
-		// TODO Auto-generated method stub
-		Branch source= getBranch(branch.getIdSourceBranch());
-		
-		final Iterador<File> it = source.ItFiles();
-		
-		//File f = null;
-
+		Branch source = getBranch(branch.getIdSourceBranch());
+		System.out.println("initializeBranch, num branches antes de: " + branches.nombreElems());
 		DiccionariAVLImpl<String, File> filesCheck = new DiccionariAVLImpl<String, File>();
-		Revision raux = null;
-		while (it.hiHaSeguent()) {
-			File fi = it.seguent();
 
-			Iterador<Revision> itreve = fi.ItRevisions();
-			while (itreve.hiHaSeguent()) {
-				Revision revi = itreve.seguent();
-				raux = revi;
+		if (source != null) {
+			final Iterador<File> it = source.ItFiles();
+
+			Revision raux = null;
+			while (it.hiHaSeguent()) {
+				File fi = it.seguent();
+
+				Iterador<Revision> itreve = fi.ItRevisions();
+				while (itreve.hiHaSeguent()) {
+					Revision revi = itreve.seguent();
+					raux = revi;
+				}
+				if (raux != null) {
+					String nounom = fi.getIdentifier();
+					File fnou = new File(nounom);
+					fnou.addRevision(raux);
+					filesCheck.afegir(nounom, fnou);
+					System.out.println("ini: reve:" + raux.getIdRevision() + " file:" + nounom);
+				}
 			}
-			if (raux != null) {
-				fi.addRevision(raux);
-				filesCheck.afegir(fi.getIdentifier(), fi);// fi.consultaRevisio(idRevision)
-			}
+			branch.initAVLfiles(filesCheck);
 		}
-		branch.initAVLfiles(filesCheck);
+		Iterador<File> itprint = filesCheck.elements();
+		while (itprint.hiHaSeguent()) {
+			File fil = itprint.seguent();
+			System.out.println("ini print:" + fil);
+		}
 	}
 
 	/**
