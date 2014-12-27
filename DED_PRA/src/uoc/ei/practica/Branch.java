@@ -32,13 +32,21 @@ public class Branch {
 	 */
 	public Branch(String idSource, String idTargetBranch, String idUser) {
 		this.idUser = idUser;
-		this.idSourceBranch = idSource;
+		this.setIdSourceBranch(idSource);
 		this.idBranch = idTargetBranch;
 		this.files = new DiccionariAVLImpl<String, File>();
 	}
 
 	public String getIdBranch() {
 		return idBranch;
+	}
+
+	public String getIdSourceBranch() {
+		return idSourceBranch;
+	}
+
+	public void setIdSourceBranch(String idSourceBranch) {
+		this.idSourceBranch = idSourceBranch;
 	}
 
 	/**
@@ -128,5 +136,9 @@ public class Branch {
 			r = f.getRevision(idRevision);
 		}
 		return r;
+	}
+
+	public void initAVLfiles(DiccionariAVLImpl<String, File> filesCheck) {
+		files=filesCheck;
 	}
 }

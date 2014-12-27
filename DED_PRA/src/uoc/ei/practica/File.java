@@ -107,4 +107,9 @@ public class File extends IdentifiedObject {
 		return this.revisions.elements();
 	}
 
+	public void addRevision(Revision raux) {
+		this.revisions.afegirAlFinal(raux);
+		
+	}
+
 }

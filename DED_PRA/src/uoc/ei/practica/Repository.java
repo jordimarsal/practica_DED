@@ -1,5 +1,6 @@
 package uoc.ei.practica;
 
+import uoc.ei.tads.DiccionariAVLImpl;
 import uoc.ei.tads.Iterador;
 import uoc.ei.tads.LlistaEncadenada;
 
@@ -50,7 +51,7 @@ public class Repository {
 		this.path = path;
 		this.description = description;
 		this.idRepository = idRepository;
-		this.addBranch("Trunk", "Trunk", "TR");
+		this.addBranch(new Branch("Trunk", "Trunk", "TR"));
 		System.out.println("from creator ");
 	}
 
@@ -111,11 +112,44 @@ public class Repository {
 	/**
 	 * mètode que afegeix una nova branca a un repositori
 	 * 
-	 * @param group
+	 * @param branch
 	 */
 	public void addBranch(Branch branch) {
+		initialiceBranch(branch);
 		this.branches.afegirAlFinal(branch);
+		
 		System.out.println("added " + branch.getIdBranch());
+	}
+
+	/**
+	 * mètode que inicialitza una nova branca
+	 * 
+	 * @param branch
+	 */
+	private void initialiceBranch(Branch branch) {
+		// TODO Auto-generated method stub
+		Branch source= getBranch(branch.getIdSourceBranch());
+		
+		final Iterador<File> it = source.ItFiles();
+		
+		//File f = null;
+
+		DiccionariAVLImpl<String, File> filesCheck = new DiccionariAVLImpl<String, File>();
+		Revision raux = null;
+		while (it.hiHaSeguent()) {
+			File fi = it.seguent();
+
+			Iterador<Revision> itreve = fi.ItRevisions();
+			while (itreve.hiHaSeguent()) {
+				Revision revi = itreve.seguent();
+				raux = revi;
+			}
+			if (raux != null) {
+				fi.addRevision(raux);
+				filesCheck.afegir(fi.getIdentifier(), fi);// fi.consultaRevisio(idRevision)
+			}
+		}
+		branch.initAVLfiles(filesCheck);
 	}
 
 	/**
@@ -273,9 +307,9 @@ public class Repository {
 		return b;
 	}
 
-	public void addBranch(String idSourceBranch, String idTargetBranch, String idUser) {
+	/*public void addBranch(String idSourceBranch, String idTargetBranch, String idUser) {
 		Branch bra = new Branch(idSourceBranch, idTargetBranch, idUser);
 		this.branches.afegirAlFinal(bra);
-	}
+	}*/
 
 }
