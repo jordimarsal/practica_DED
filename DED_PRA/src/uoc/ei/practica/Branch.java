@@ -13,7 +13,7 @@ public class Branch {
 	private String idUser;
 
 	/**
-	 * identificació de la branca destinació
+	 * identificació de la branca
 	 */
 	private String idBranch;
 
@@ -29,22 +29,41 @@ public class Branch {
 
 	/**
 	 * Constructor de la classe
+	 * 
+	 * @param idSource
+	 *            identificador de la branca origen
+	 * @param idBranch
+	 *            identificador d'aquesta branca
+	 * @param idUser
+	 *            identificador del usuari
 	 */
-	public Branch(String idSource, String idTargetBranch, String idUser) {
+	public Branch(String idSource, String idBranch, String idUser) {
 		this.idUser = idUser;
 		this.setIdSourceBranch(idSource);
-		this.idBranch = idTargetBranch;
+		this.idBranch = idBranch;
 		this.files = new DiccionariAVLImpl<String, File>();
 	}
 
+	/**
+	 * @return retorna la id d'aquesta branca
+	 */
 	public String getIdBranch() {
 		return idBranch;
 	}
 
+	/**
+	 * @return retorna la id de la branca d'origen
+	 */
 	public String getIdSourceBranch() {
 		return idSourceBranch;
 	}
 
+	/**
+	 * Estableix la id de la branca d'origen
+	 * 
+	 * @param idSourceBranch
+	 * 
+	 */
 	public void setIdSourceBranch(String idSourceBranch) {
 		this.idSourceBranch = idSourceBranch;
 	}
@@ -55,7 +74,7 @@ public class Branch {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(idBranch);// .append(Messages.LS)
+		sb.append(idBranch);
 		return sb.toString();
 	}
 
@@ -121,6 +140,23 @@ public class Branch {
 	}
 
 	/**
+	 * mètode que afegeix una nova revisió sobre un fitxer
+	 * en el cas de afegir desde una branca a una altra
+	 * 
+	 * @param filePath
+	 *            fitxer sobre el que es realitza una nova revisió
+	 * @param revision
+	 *            nova revisió
+	 */
+	public void addRevision(String filePath, Revision revision) {
+		File f = this.files.consultar(filePath);
+		if (f == null) {
+			f = addFile(filePath);
+		}
+		f.addRevision(revision);
+	}
+
+	/**
 	 * mètode que retorna una revisió d'un fitxer sobre una determinada revisió
 	 * 
 	 * @param filePath
@@ -138,7 +174,30 @@ public class Branch {
 		return r;
 	}
 
+	/**
+	 * mètode que inicialitza el AVL de fitxers
+	 * s'usa al inicialitzar una nova branca
+	 * 
+	 * @param filesCheck
+	 *            el AVL de fitxers amb el que s'inicialitza la branca
+	 */
 	public void initAVLfiles(DiccionariAVLImpl<String, File> filesCheck) {
-		files=filesCheck;
+		files = filesCheck;
+	}
+
+	/**
+	 * mètode que determina si un fitxer hi és en aquesta branca
+	 * 
+	 * @param identifier
+	 *            l'identificador del fitxer
+	 * @return
+	 *         retorna cert o fals
+	 */
+	public boolean hasFile(String identifier) {
+		File f = this.files.consultar(identifier);
+		if (f == null) {
+			return false;
+		}
+		return true;
 	}
 }

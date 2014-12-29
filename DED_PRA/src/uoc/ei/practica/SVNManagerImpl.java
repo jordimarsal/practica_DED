@@ -39,10 +39,7 @@ public class SVNManagerImpl implements SVNManager {
 	public SVNManagerImpl() {
 		this.repositories = new TaulaDispersio<String, Repository>();
 		this.len = 0;
-
-		// this.users = new OrderedVector<String, User>(U, User.COMP);
 		this.users = new DiccionariAVLImpl<String, User>();
-		// this.groups = new IdentifiedList<Group>();
 		this.groups = new DiccionariAVLImpl<String, Group>();
 		SVNManagerImpl.mostActiveRepository = null;
 		SVNManagerImpl.mostActiveGroup = null;
@@ -63,14 +60,12 @@ public class SVNManagerImpl implements SVNManager {
 
 	@Override
 	public void addGroup(String idGroup, String name) throws EIException {
-
 		this.groups.afegir(idGroup, new Group(idGroup, name));
 	}
 
 	@Override
 	public void groupAddUser(String idGroup, String idUser) throws EIException {
 		Group g = this.groups.consultar(idGroup);
-		// Group g = this.groups.getIdentifiedObject(idGroup, Messages.GROUP_NOT_FOUND);
 		User u = this.users.consultar(idUser);
 		if (u == null) {
 			throw new EIException(Messages.USER_NOT_FOUND);
@@ -78,9 +73,7 @@ public class SVNManagerImpl implements SVNManager {
 		if (g == null) {
 			throw new EIException(Messages.GROUP_NOT_FOUND);
 		}
-
 		u.addGroup(g);
-
 	}
 
 	private void updateMostActiveRepository(Repository repo) {
@@ -119,7 +112,6 @@ public class SVNManagerImpl implements SVNManager {
 			throw new EIException(Messages.NO_REPOSITORIES);
 		}
 		Iterador<Repository> it = this.repositories.elements();
-
 		return it;
 	}
 
@@ -200,14 +192,10 @@ public class SVNManagerImpl implements SVNManager {
 			}
 			if (raux != null) {
 				reviCheck.afegirAlFinal(raux);
-				System.out.println("chk: file:" + fi.getIdentifier());
-				System.out.println("chk: branch:" + bran.getIdBranch() + " rev consultada:" + idRevision + " hallada:"
-						+ raux.getIdRevision() + " bla:" + raux.toString());
 				raux = null;
 				revi = null;
 			}
 		}
-		System.out.println("ret");
 		return reviCheck.elements();
 
 	}
@@ -239,7 +227,6 @@ public class SVNManagerImpl implements SVNManager {
 	@Override
 	public Repository getRepository(String idRepository) throws EIException {
 		Repository ret = null;
-		// if (idRepository <= this.len) {
 		ret = this.repositories.consultar(idRepository);
 		if (ret == null) {
 			throw new EIException(Messages.REPOSITORY_NOT_FOUND);
@@ -281,8 +268,64 @@ public class SVNManagerImpl implements SVNManager {
 	@Override
 	public void merge(String idRepository, String idSourceBranch, String idTargetBranch, String idUser)
 			throws EIException {
-		// TODO Auto-generated method stub
+		Repository repo = this.repositories.consultar(idRepository);
+		if (repo == null) {
+			throw new EIException(Messages.REPOSITORY_NOT_FOUND);
+		}
+		User user = this.users.consultar(idUser);
+		if (user == null) {
+			throw new EIException(Messages.USER_NOT_FOUND);
+		}
+		Branch bSource = repo.getBranch(idSourceBranch);
+		if (bSource == null) {
+			throw new EIException(Messages.BRANCH_NOT_FOUND);
+		}
+		Branch bTarget = repo.getBranch(idTargetBranch);
+		if (bTarget == null) {
+			throw new EIException(Messages.BRANCH_NOT_FOUND);
+		}
+		if (!bSource.getIdSourceBranch().equals(bTarget.getIdBranch())) {
+			throw new EIException(Messages.MERGE_CONFLICT);
+		}
+		if (repo.hasPermission(user)) {
+			Iterador<File> itS = bSource.ItFiles();
+			Revision reSource = null;
+			Revision reTarget = null;
+			Revision revi = null;
+			File exisFaT = null;
 
+			while (itS.hiHaSeguent()) {
+				File fiS = itS.seguent();
+				Iterador<Revision> itreve = fiS.ItRevisions();
+				while (itreve.hiHaSeguent()) {
+					revi = itreve.seguent();
+				}
+				reSource = revi;
+				// cerquem aquest file a la branca de Target
+				if (bTarget.hasFile(fiS.getIdentifier())) {
+					exisFaT = bTarget.getFile(fiS.getIdentifier());
+				}
+				if (exisFaT != null) {
+					// darrera versió
+					Iterador<Revision> itT = exisFaT.ItRevisions();
+					while (itT.hiHaSeguent()) {
+						revi = itT.seguent();
+					}
+					reTarget = revi;
+					if (reTarget.getIdRevision() < reSource.getIdRevision()) {
+						bTarget.addRevision(fiS.getIdentifier(), reSource);
+					}
+				} else {
+					bTarget.addRevision(fiS.getIdentifier(), reSource);
+				}
+				exisFaT = null;
+				revi = null;
+				reSource = null;
+				reTarget = null;
+			}
+		} else {
+			throw new EIException(Messages.NO_PRIVILEGES);
+		}
 	}
 
 	@Override

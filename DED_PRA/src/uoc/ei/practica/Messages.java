@@ -28,4 +28,6 @@ public interface Messages {
 
 	public static final String BRANCH_NOT_FOUND = "Branch not found";
 
+	public static final String MERGE_CONFLICT = "Merge conflict";
+
 }

@@ -107,9 +107,16 @@ public class File extends IdentifiedObject {
 		return this.revisions.elements();
 	}
 
-	public void addRevision(Revision raux) {
-		this.revisions.afegirAlFinal(raux);
-		
+	/**
+	 * métode que afegeix una revisió sobre un fitxer
+	 * usat al inicialitzar una nova branca
+	 * 
+	 * @param revisio
+	 *            revisió que s'afegeix sobre un fitxer
+	 */
+	public void addRevision(Revision revisio) {
+		this.revisions.afegirAlFinal(revisio);
+
 	}
 
 }
