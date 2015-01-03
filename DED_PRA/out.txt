@@ -28,54 +28,72 @@ ERROR: There are no repositories
 users()
 ERROR: There are no users
 
-addRepository(1, /repo1, description1)
+## ERROR *********
+branches(1)
+ERROR: Repository not found
+
+addRepository(REPO1, /repo1, description1)
 void
-addRepository(2, /repo2, description2)
+addRepository(REPO2, /repo2, description2)
 void
-addRepository(4, /repo4, description4)
+addRepository(REPO4, /repo4, description4)
 void
-addRepository(5, /repo5, description5)
+addRepository(REPO5, /repo5, description5)
 void
+
+## ERROR *********
+addRepository(, /repo6, description6)
+ERROR: Empty or too short argument
 
 repositories()
 path: /repo1
 description: description1
 activity: 0
-	no files
+branches: 
+	Trunk
 
 path: /repo2
 description: description2
 activity: 0
-	no files
+branches: 
+	Trunk
 
 path: /repo4
 description: description4
 activity: 0
-	no files
+branches: 
+	Trunk
 
 path: /repo5
 description: description5
 activity: 0
-	no files
+branches: 
+	Trunk
 
 
-getRepository(1)
+## ERROR *********
+getRepository(REPXX)
+ERROR: Repository not found
+
+getRepository(REPO1)
 path: /repo1
 description: description1
 activity: 0
-	no files
+branches: 
+	Trunk
 
 
-getRepository(4)
+getRepository(REPO4)
 path: /repo4
 description: description4
 activity: 0
-	no files
+branches: 
+	Trunk
 
 
 # ERROR
-checkout(1, 333)
-ERROR: There are no files
+ERROR: El metode checkout(REPO1, 333) no existeix
+
 
 addUser(U1, joep@uoc.edu, ****)
 void
@@ -87,6 +105,13 @@ addUser(A36, marti@uoc.edu, ****)
 void
 addUser(A16, pepmarti@uoc.edu, ****)
 void
+
+## ERROR *********
+addUser(, nohies@uoc.edu, ****)
+ERROR: Empty or too short argument
+addUser(AA, , ****)
+ERROR: Empty or too short argument
+
 
 users()
 A16 pepmarti@uoc.edu **** 
@@ -103,6 +128,7 @@ U1 joep@uoc.edu ****
 # update
 addUser(U1, josep@uoc.edu, ****)
 void
+
 
 users()
 A16 pepmarti@uoc.edu **** 
@@ -132,6 +158,9 @@ void
 addGroup(G5, Group 5)
 void
 
+## ERROR *********
+addGroup(, Group 6)
+ERROR: Empty or too short argument
 
 groups()
 G1 Group 1 activity: 0
@@ -152,6 +181,11 @@ ERROR: Group not found
 # ERROR
 groupAddUser(G1, UXXX)
 ERROR: User not found
+
+# ERROR *********
+groupAddUser(, U1)
+ERROR: Empty or too short argument
+
 
 groupAddUser(G1, U1)
 void
@@ -183,19 +217,30 @@ U1 josep@uoc.edu ****
 	G2 Group 2 activity: 0
 
 
-repositoryAddGroup(1, G1)
+repositoryAddGroup(REPO1, G1)
 void
-repositoryAddGroup(1, G3)
+repositoryAddGroup(REPO1, G3)
 void
 
-repositoryAddGroup(2, G4)
+repositoryAddGroup(REPO2, G4)
 void
+
+# ERROR *********
+repositoryAddGroup(, G4)
+ERROR: Empty or too short argument
+repositoryAddGroup(REPOXX, G4)
+ERROR: Repository not found
+repositoryAddGroup(REPO2, GXX)
+ERROR: Group not found
+
 
 repositories()
 path: /repo1
 description: description1
 activity: 0
-	no files
+branches: 
+	Trunk
+groups: 
 	G1 Group 1 activity: 0
 	G3 Group 3 activity: 0
 
@@ -203,83 +248,91 @@ activity: 0
 path: /repo2
 description: description2
 activity: 0
-	no files
+branches: 
+	Trunk
+groups: 
 	G4 Group 4 activity: 0
 
 
 path: /repo4
 description: description4
 activity: 0
-	no files
+branches: 
+	Trunk
 
 path: /repo5
 description: description5
 activity: 0
-	no files
+branches: 
+	Trunk
 
 
 # ERROR
-commit(99999, 1, U1, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
+commit(REPO99999, Trunk, 1, U1, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
 ERROR: Repository not found
 
 # ERROR
-commit(1, 1, XXXXX1, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
+commit(REPO1, Trunk, 1, XXXXX1, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
 ERROR: User not found
 
 # ERROR  B3 - Repo 1
-commit(1, 1, B3, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
+commit(REPO1, Trunk, 1, B3, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
 ERROR: No privileges on this repo
 
 # ERROR  A16 - Repo 1
-commit(1, 333, A16, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
+commit(REPO1, Trunk, 333, A16, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
 ERROR: No privileges on this repo
 
 # ERROR  J2 - Repo 1
-commit(1, 333, J2, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
+commit(REPO1, Trunk, 333, J2, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld)
 ERROR: No privileges on this repo
 
+# ERROR  *********   u1 - Repo 1 - Branch no hi es
+commit(REPO1, nohies, 333, U1, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld (333))
+ERROR: Branch not found
 
-commit(1, 333, U1, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld (333))
+
+commit(REPO1, Trunk, 333, U1, 14-10-2014 15:30:00, /src/HelloWorld.java, public class HelloWorld (333))
 void
-commit(1, 333, U1, 15-10-2014 15:30:00, /src/Main.java, public class Main (333))
+commit(REPO1, Trunk, 333, U1, 15-10-2014 15:30:00, /src/Main.java, public class Main (333))
 void
-commit(1, 333, A36, 15-10-2014 15:30:00, /src/Test.java, public class Test (333))
+commit(REPO1, Trunk, 333, A36, 15-10-2014 15:30:00, /src/Test.java, public class Test (333))
 void
-commit(1, 333, A36, 15-10-2014 15:30:00, /src/ApiHelper.java, public class ApiHelper (333))
+commit(REPO1, Trunk, 333, A36, 15-10-2014 15:30:00, /src/ApiHelper.java, public class ApiHelper (333))
 void
-commit(1, 333, A36, 15-10-2014 15:30:00, /src/DBUtils.java, public class DBUtils (333))
+commit(REPO1, Trunk, 333, A36, 15-10-2014 15:30:00, /src/DBUtils.java, public class DBUtils (333))
 void
 
-commit(1, 334, U1, 14-10-2014 15:35:00, /src/HelloWorld.java, public class HelloWorld // msg1 (334))
+commit(REPO1, Trunk, 334, U1, 14-10-2014 15:35:00, /src/HelloWorld.java, public class HelloWorld // msg1 (334))
 void
-commit(1, 334, U1, 15-10-2014 15:35:00, /src/Main.java, public class Main // msg1 (334))
+commit(REPO1, Trunk, 334, U1, 15-10-2014 15:35:00, /src/Main.java, public class Main // msg1 (334))
 void
 
-commit(1, 335, U1, 14-10-2014 15:40:00, /src/HelloWorld.java, public class HelloWorld // msg2 (335))
+commit(REPO1, Trunk, 335, U1, 14-10-2014 15:40:00, /src/HelloWorld.java, public class HelloWorld // msg2 (335))
 void
-commit(1, 335, U1, 15-10-2014 15:40:00, /src/Main.java, public class Main // msg2 (335))
+commit(REPO1, Trunk, 335, U1, 15-10-2014 15:40:00, /src/Main.java, public class Main // msg2 (335))
 void
 
 # error
-commit(1, 333, U1, 15-10-2014 15:40:00, /src/Main.java, public class Main // msg2)
+commit(REPO1, Trunk, 333, U1, 15-10-2014 15:40:00, /src/Main.java, public class Main // msg2)
 ERROR: Revision already exists
 
 
 # Repo 2
 
 # ERROR A16 - Repo 2
-commit(2, 100, A16, 15-10-2014 15:40:00, /src/JTree.java, public class Main // msg a16)
+commit(REPO2, Trunk, 100, A16, 15-10-2014 15:40:00, /src/JTree.java, public class Main // msg a16)
 ERROR: No privileges on this repo
 
 # ERROR A36 - Repo 2
-commit(2, 100, A36, 15-10-2014 15:40:00, /src/JTree.java, public class Main // msg a36)
+commit(REPO2, Trunk, 100, A36, 15-10-2014 15:40:00, /src/JTree.java, public class Main // msg a36)
 ERROR: No privileges on this repo
 
 # ERROR U1 - Repo 2
-commit(2, 100, U1, 15-10-2014 15:40:00, /src/JTree.java, public class Main // msg u1)
+commit(REPO2, Trunk, 100, U1, 15-10-2014 15:40:00, /src/JTree.java, public class Main // msg u1)
 ERROR: No privileges on this repo
 
-commit(2, 100, B3, 15-10-2014 15:40:00, /src/JTree.java, public class Main // msg B3)
+commit(REPO2, Trunk, 100, B3, 15-10-2014 15:40:00, /src/JTree.java, public class Main // msg B3)
 void
 
 
@@ -287,21 +340,9 @@ mostActiveRepository()
 path: /repo1
 description: description1
 activity: 9
-	filePath:/src/HelloWorld.java
-	333 public class HelloWorld (333) U1 
-	334 public class HelloWorld // msg1 (334) U1 
-	335 public class HelloWorld // msg2 (335) U1 
-	filePath:/src/Main.java
-	333 public class Main (333) U1 
-	334 public class Main // msg1 (334) U1 
-	335 public class Main // msg2 (335) U1 
-	filePath:/src/Test.java
-	333 public class Test (333) A36 
-	filePath:/src/ApiHelper.java
-	333 public class ApiHelper (333) A36 
-	filePath:/src/DBUtils.java
-	333 public class DBUtils (333) A36 
-
+branches: 
+	Trunk
+groups: 
 	G1 Group 1 activity: 6
 	G3 Group 3 activity: 3
 
@@ -312,49 +353,214 @@ G1 Group 1 activity: 6
 
 
 # ERROR
-getFile(1, 9999, /src/Main.java)
+getFile(REPO1, Trunk, 9999, /src/Main.java)
 ERROR: Revision not found
 
-getFile(1, 333, /src/Main.java)
+# ERROR *********
+getFile(REPO1, nohies, 333, /src/Main.java)
+ERROR: Branch not found
+
+# ERROR *********
+getFile(nohies, Trunk, 333, /src/Main.java)
+ERROR: Repository not found
+
+# ERROR *********
+getFile(REPO1, Trunk, 333, nohies)
+ERROR: File not found
+
+
+getFile(REPO1, Trunk, 333, /src/Main.java)
 333 public class Main (333) U1 
 
-getFile(1, 334, /src/Main.java)
+getFile(REPO1, Trunk, 334, /src/Main.java)
 334 public class Main // msg1 (334) U1 
 
-getFile(1, 335, /src/Main.java)
+getFile(REPO1, Trunk, 335, /src/Main.java)
 335 public class Main // msg2 (335) U1 
 
-getFile(1, 333, /src/HelloWorld.java)
+getFile(REPO1, Trunk, 333, /src/HelloWorld.java)
 333 public class HelloWorld (333) U1 
 
-getFile(1, 334, /src/HelloWorld.java)
+getFile(REPO1, Trunk, 334, /src/HelloWorld.java)
 334 public class HelloWorld // msg1 (334) U1 
 
-getFile(1, 335, /src/HelloWorld.java)
+getFile(REPO1, Trunk, 335, /src/HelloWorld.java)
 335 public class HelloWorld // msg2 (335) U1 
 
 
-checkout(1, 333)
+checkout(REPO1, Trunk, 333)
+333 public class ApiHelper (333) A36 
+333 public class DBUtils (333) A36 
 333 public class HelloWorld (333) U1 
 333 public class Main (333) U1 
 333 public class Test (333) A36 
+
+checkout(REPO1, Trunk, 334)
 333 public class ApiHelper (333) A36 
 333 public class DBUtils (333) A36 
-
-checkout(1, 334)
 334 public class HelloWorld // msg1 (334) U1 
 334 public class Main // msg1 (334) U1 
 333 public class Test (333) A36 
+
+checkout(REPO1, Trunk, 335)
 333 public class ApiHelper (333) A36 
 333 public class DBUtils (333) A36 
-
-checkout(1, 335)
 335 public class HelloWorld // msg2 (335) U1 
 335 public class Main // msg2 (335) U1 
 333 public class Test (333) A36 
-333 public class ApiHelper (333) A36 
-333 public class DBUtils (333) A36 
 
-checkout(2, 100)
+checkout(REPO2, Trunk, 100)
 100 public class Main // msg B3 B3 
+
+# ERROR *********
+checkout(REPnohies, Trunk, 333)
+ERROR: Repository not found
+
+# ERROR *********
+checkout(REPO1, Trunknohies, 333)
+ERROR: Branch not found
+
+# ERROR *********
+checkout(REPO1, Trunk, 42)
+ERROR: There are no revisions with equal or minor number
+
+# ERROR ********* !!!!
+checkout(REPO1, Trunk, 2000)
+333 public class ApiHelper (333) A36 
+333 public class DBUtils (333) A36 
+335 public class HelloWorld // msg2 (335) U1 
+335 public class Main // msg2 (335) U1 
+333 public class Test (333) A36 
+
+branches(REPO1)
+Trunk
+
+branches(REPO2)
+Trunk
+
+# ERROR ********* !!!!
+branches(nohies)
+ERROR: Repository not found
+
+
+# ERROR
+branch(REPO9999, Trunk, Branch1A, U1)
+ERROR: Repository not found
+
+# ERROR
+branch(REPO1, Tr999nk, Branch1A, U1)
+ERROR: Branch not found
+
+# ERROR
+branch(REPO1, Trunk, Branch1A, U99999)
+ERROR: User not found
+
+branch(REPO1, Trunk, Branch1A, U1)
+void
+
+branch(REPO1, Branch1A, Branch1B, U1)
+void
+
+branch(REPO1, Trunk, Branch1C, U1)
+void
+
+branches(REPO1)
+Trunk
+Branch1A
+Branch1B
+Branch1C
+
+# ERROR
+branch(REPO2, Trunk, Branch2A, U1)
+ERROR: No privileges on this repo
+
+
+branch(REPO2, Trunk, Branch2A, B3)
+void
+branch(REPO2, Branch2A, Branch2B, B3)
+void
+
+branches(REPO2)
+Trunk
+Branch2A
+Branch2B
+
+commit(REPO1, Branch1A, 334, U1, 14-10-2014 15:35:00, /src/WebServer.java, public class WebServer // msg1 (334))
+void
+commit(REPO1, Branch1A, 334, U1, 14-10-2014 15:35:00, /src/FireWall.java, public class FireWall // msg1 (334))
+void
+commit(REPO1, Branch1A, 334, U1, 14-10-2014 15:35:00, /src/EndPoint.java, public class EndPoint // msg1 (334))
+void
+commit(REPO1, Branch1A, 334, U1, 14-10-2014 15:35:00, /src/Resources.java, public class Resources // msg1 (334))
+void
+
+checkout(REPO1, Branch1A, 333)
+333 public class ApiHelper (333) A36 
+333 public class DBUtils (333) A36 
+333 public class Test (333) A36 
+
+checkout(REPO1, Branch1A, 334)
+333 public class ApiHelper (333) A36 
+333 public class DBUtils (333) A36 
+334 public class EndPoint // msg1 (334) U1 
+334 public class FireWall // msg1 (334) U1 
+334 public class Resources // msg1 (334) U1 
+333 public class Test (333) A36 
+334 public class WebServer // msg1 (334) U1 
+
+# ERROR
+merge(REPO9999, Branch1A, Trunk, U1)
+ERROR: Repository not found
+
+# ERROR
+merge(REPO1, Branch1AXXXXX, Trunk, U1)
+ERROR: Branch not found
+
+# ERROR
+merge(REPO1, Branch1A, TrunkXXXXXX, U1)
+ERROR: Branch not found
+
+# ERROR
+merge(REPO1, Branch1A, TrunkXXXXXX, U1)
+ERROR: Branch not found
+
+# ERROR
+merge(REPO1, Branch1A, Trunk, UXXXXXX)
+ERROR: User not found
+
+# ERROR
+merge(REPO2, Branch2A, Trunk, A36)
+ERROR: No privileges on this repo
+
+# ERROR
+merge(REPO1, Branch1A, Branch1C, U1)
+ERROR: Merge conflict
+
+checkout(REPO1, Trunk, 334)
+333 public class ApiHelper (333) A36 
+333 public class DBUtils (333) A36 
+334 public class HelloWorld // msg1 (334) U1 
+334 public class Main // msg1 (334) U1 
+333 public class Test (333) A36 
+
+merge(REPO1, Branch1A, Trunk, U1)
+void
+
+checkout(REPO1, Trunk, 333)
+333 public class ApiHelper (333) A36 
+333 public class DBUtils (333) A36 
+333 public class HelloWorld (333) U1 
+333 public class Main (333) U1 
+333 public class Test (333) A36 
+
+checkout(REPO1, Trunk, 334)
+333 public class ApiHelper (333) A36 
+333 public class DBUtils (333) A36 
+334 public class EndPoint // msg1 (334) U1 
+334 public class FireWall // msg1 (334) U1 
+334 public class HelloWorld // msg1 (334) U1 
+334 public class Main // msg1 (334) U1 
+334 public class Resources // msg1 (334) U1 
+333 public class Test (333) A36 
+334 public class WebServer // msg1 (334) U1 
 

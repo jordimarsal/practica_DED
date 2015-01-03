@@ -47,6 +47,9 @@ public class SVNManagerImpl implements SVNManager {
 
 	@Override
 	public void addUser(String idUser, String email, String password) throws EIException {
+		if (idUser.length() <= 1 || email.length() <= 1) {
+			throw new EIException(Messages.ARGUMENT_ERROR);
+		}
 
 		User user = this.users.consultar(idUser);
 		if (user == null) {
@@ -60,11 +63,17 @@ public class SVNManagerImpl implements SVNManager {
 
 	@Override
 	public void addGroup(String idGroup, String name) throws EIException {
+		if (idGroup.length() <= 1 || name.length() <= 1) {
+			throw new EIException(Messages.ARGUMENT_ERROR);
+		}
 		this.groups.afegir(idGroup, new Group(idGroup, name));
 	}
 
 	@Override
 	public void groupAddUser(String idGroup, String idUser) throws EIException {
+		if (idGroup.length() <= 1 || idUser.length() <= 1) {
+			throw new EIException(Messages.ARGUMENT_ERROR);
+		}
 		Group g = this.groups.consultar(idGroup);
 		User u = this.users.consultar(idUser);
 		if (u == null) {
@@ -117,6 +126,9 @@ public class SVNManagerImpl implements SVNManager {
 
 	@Override
 	public void addRepository(String idRepository, String path, String description) throws EIException {
+		if (idRepository.length() <= 1) {
+			throw new EIException(Messages.ARGUMENT_ERROR);
+		}
 		Repository repository = new Repository(idRepository, path, description);
 		this.repositories.afegir(idRepository, repository);
 		len++;
@@ -124,8 +136,14 @@ public class SVNManagerImpl implements SVNManager {
 
 	@Override
 	public void repositoryAddGroup(String idRepository, String idGroup) throws EIException {
+		if (idRepository.length() <= 1 || idGroup.length() <= 1) {
+			throw new EIException(Messages.ARGUMENT_ERROR);
+		}
 		Repository repository = this.getRepository(idRepository);
 		Group group = this.groups.consultar(idGroup);
+		if (group == null) {
+			throw new EIException(Messages.GROUP_NOT_FOUND);
+		}
 		repository.addGroup(group);
 	}
 
@@ -195,6 +213,9 @@ public class SVNManagerImpl implements SVNManager {
 				raux = null;
 				revi = null;
 			}
+		}
+		if (reviCheck.estaBuit()) {
+			throw new EIException(Messages.NO_REVISION);
 		}
 		return reviCheck.elements();
 

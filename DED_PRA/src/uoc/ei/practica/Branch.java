@@ -5,6 +5,10 @@ import java.util.Date;
 import uoc.ei.tads.DiccionariAVLImpl;
 import uoc.ei.tads.Iterador;
 
+/**
+ * classe que modela una entitat Branch
+ * 
+ */
 public class Branch {
 
 	/**

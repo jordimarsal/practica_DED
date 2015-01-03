@@ -30,4 +30,8 @@ public interface Messages {
 
 	public static final String MERGE_CONFLICT = "Merge conflict";
 
+	public static final String ARGUMENT_ERROR = "Empty or too short argument";
+
+	public static final String NO_REVISION = "There are no revisions with equal or minor number";
+
 }
