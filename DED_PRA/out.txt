@@ -421,16 +421,9 @@ checkout(REPO1, Trunknohies, 333)
 ERROR: Branch not found
 
 # ERROR *********
-checkout(REPO1, Trunk, 42)
+checkout(REPO1, Trunk, 99)
 ERROR: There are no revisions with equal or minor number
 
-# ERROR ********* !!!!
-checkout(REPO1, Trunk, 2000)
-333 public class ApiHelper (333) A36 
-333 public class DBUtils (333) A36 
-335 public class HelloWorld // msg2 (335) U1 
-335 public class Main // msg2 (335) U1 
-333 public class Test (333) A36 
 
 branches(REPO1)
 Trunk
@@ -438,7 +431,7 @@ Trunk
 branches(REPO2)
 Trunk
 
-# ERROR ********* !!!!
+# ERROR *********
 branches(nohies)
 ERROR: Repository not found
 
